@@ -1,6 +1,6 @@
 # DoorSensor
 
-This is a simple sensor that uses an accelerometer and an NRF24l01+ wireless transceiver to monitor the state of a door thumbturn (The small knob that moves the deadbolt). The sensor physically attaches to the deadbold and uses the accelerometer to deterimine its orientation and therefore the state of the deadbolt.
+This is a simple sensor that uses an accelerometer and an NRF24l01+ wireless transceiver to monitor the state of a door thumbturn (The small knob that moves the deadbolt). The sensor physically attaches to the deadbolt and uses the accelerometer to deterimine its orientation and therefore the state of the deadbolt.
 
 It is designed to have very low power comsumption to allow the batteries to last a long time.
 
