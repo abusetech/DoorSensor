@@ -1,4 +1,4 @@
-#include "spi.hpp"
+#include "spi.h"
 
 SPI::SPI(volatile uint8_t * _ss_port, uint8_t _ss_pin){
     ss_pin = _ss_pin;

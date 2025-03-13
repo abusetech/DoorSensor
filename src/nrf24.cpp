@@ -1,4 +1,4 @@
-#include "nrf24.hpp"
+#include "nrf24.h"
 
 //Should be LSByte to MSByte, so this reverse the data inline?
 void NRF24::writeRegister(uint8_t addr, const uint8_t * data, uint8_t size){

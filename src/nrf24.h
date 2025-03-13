@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "spi.hpp"
+#include "spi.h"
 
 //Register addresses
 #define RF24_CONFIG 0x00

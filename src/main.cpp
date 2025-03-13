@@ -1,8 +1,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h> 
-#include "spi.hpp"
-#include "nrf24.hpp"
+#include <stdint.h>
+#include "spi.h"
+#include "nrf24.h"
 
 #define NRF_SPI_CS_PORT PORTA
 #define NRF_SPI_CE_PORT PORTA
@@ -13,6 +14,7 @@
 #define RF_CHAN (25)
 const uint8_t DEST_ADDRESS[5] PROGMEM = {0x7E, 0x7E, 0x7E, 0x7E, 0x7E};
 
+int main (void);
 
 int main (void){
     SPI nrf_spi(&NRF_SPI_CS_PORT, NRF_SPI_CS);
@@ -22,7 +24,7 @@ int main (void){
     //falls out of scope immediately.
     {
         uint8_t addr[sizeof(DEST_ADDRESS)];
-        for (int i = 0; i < sizeof(DEST_ADDRESS); i++){
+        for (uint8_t i = 0; i < sizeof(DEST_ADDRESS); i++){
             addr[i] = pgm_read_byte(&(DEST_ADDRESS[i]));
         }
         nrf.setDestAddress(addr, sizeof(DEST_ADDRESS));
