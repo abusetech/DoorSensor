@@ -18,7 +18,7 @@ int main (void);
 
 int main (void){
     SPI nrf_spi(&NRF_SPI_CS_PORT, NRF_SPI_CS);
-    NRF24 nrf(nrf_spi, &NRF_SPI_CE_PORT, NRF_SPI_CE);
+    NRF24 nrf(nrf_spi, &NRF_SPI_CE_PORT, NRF_SPI_CE) ;
     //DEST_ADDRESS is stored in program memory to save SRAM, we copy it to a buffer
     //Temporarily to set it in the NRF library. It is enclosed in a closure so that it
     //falls out of scope immediately.

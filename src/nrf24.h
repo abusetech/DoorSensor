@@ -45,7 +45,7 @@ private:
     SPI &spi;
 
 public:
-    NRF24(SPI &, volatile uint8_t * ce_port, uint8_t ce_pin);
+    NRF24(SPI&, volatile uint8_t * ce_port, uint8_t ce_pin);
     void writeRegister(uint8_t addr, const uint8_t *data, uint8_t size);
     void writeRegister(uint8_t addr, uint8_t data);
     void setDestAddress(const uint8_t * addr, uint8_t size);

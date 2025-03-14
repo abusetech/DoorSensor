@@ -13,16 +13,25 @@ PDEPS = $(patsubst %,$(SRC_DIR)/%,$(DEPS))
 POBJ = $(patsubst %,$(BUILD_DIR)/%,$(OBJ))
 PHEADERS = $(patsubst %,$(SRC_DIR)/%,$(HEADERS))
 
-TARGET = main
+TARGET = main.elf
+PTARGET = $(BUILD_DIR)/$(TARGET)
 
 vars :
 	echo PDEPS: $(PDEPS)
 	echo POBJ: $(POBJ)
 	echo OBJ: $(OBJ)
 	echo HEADERS: $(HEADERS)
-all: $(TARGET)
-	.PHONY: all
+
+all: $(PTARGET)
+.PHONY: all
+
+clean:
+	rm build/*.o build/*.elf build/*.hex
+
 $(POBJ) : $(PDEPS)
 	$(CXX) $(CXXFLAGS) -c $(patsubst $(BUILD_DIR)/%.o,$(SRC_DIR)/%.cpp,$@) -o $@
-$(TARGET) : $(POBJ)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(POBJ)
+
+$(PTARGET) : $(POBJ)
+	$(CXX) $(CXXFLAGS) -o $(PTARGET) $(POBJ)
+
+

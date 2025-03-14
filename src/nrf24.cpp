@@ -1,5 +1,11 @@
 #include "nrf24.h"
 
+NRF24::NRF24(SPI& _spi, volatile uint8_t * port, uint8_t pin) : spi(_spi){
+ 
+    ce_port = port;
+    ce_pin = pin;
+}
+
 //Should be LSByte to MSByte, so this reverse the data inline?
 void NRF24::writeRegister(uint8_t addr, const uint8_t * data, uint8_t size){
     uint8_t wcmd[size+1];

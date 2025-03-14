@@ -1,4 +1,5 @@
 #include "spi.h"
+#include <avr/io.h>
 
 SPI::SPI(volatile uint8_t * _ss_port, uint8_t _ss_pin){
     ss_pin = _ss_pin;
@@ -35,7 +36,7 @@ uint8_t SPI::transferByte(uint8_t b){
     //Clear overflow bit
     USISR = (1 << USIOIF);
     //Spin until overflow bit is set
-    while (USISR & USIOIF == 0){
+    while ((USISR & USIOIF) == 0){
         //Original has USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC) here
     }
     //Get the byte we received form the data register

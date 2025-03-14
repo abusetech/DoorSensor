@@ -16,3 +16,13 @@ You will also need an Arduino board, a second NRF24L01+, and some means of conne
 ### Operation
 
 The Arduino runs firmware that allows it to connect to HomeAssistant. It acts as a bridge between the HomeAssistant and the wireless sensor.
+
+### Building
+
+Make a build directory:
+
+`$ mkdir build`
+
+Run `make`
+
+`$ make all`
