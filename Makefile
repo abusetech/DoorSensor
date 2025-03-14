@@ -1,21 +1,28 @@
 CXX = avr-gcc
 CXXFLAGS = -Wall -Os -std=c++11 -mmcu=attiny44
-BUILD_DIR = build
-SRC_DIR = src
-SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.c)
-OBJS = ${subst $(SRC_DIR),$(BUILD_DIR),$(patsubst %.c,%.o,$(SRCS:.cpp=.o))}
-TARGET = $(BUILD_DIR)/main.elf
-BIN = $($(TARGET):.elf,.hex)
 
+BUILD_DIR=build
+SRC_DIR=src
+
+DEPS = main.cpp nrf24.cpp spi.cpp
+
+HEADERS = $(patsubst %.cpp,%.h,$(DEPS))
+OBJ=$(patsubst %.h,%.o,$(HEADERS))
+
+PDEPS = $(patsubst %,$(SRC_DIR)/%,$(DEPS))
+POBJ = $(patsubst %,$(BUILD_DIR)/%,$(OBJ))
+PHEADERS = $(patsubst %,$(SRC_DIR)/%,$(HEADERS))
+
+TARGET = main
+
+vars :
+	echo PDEPS: $(PDEPS)
+	echo POBJ: $(POBJ)
+	echo OBJ: $(OBJ)
+	echo HEADERS: $(HEADERS)
 all: $(TARGET)
-	echo $(OBJS)
-
-$(OBJS): $(SRCS)
-	echo Building $(OBJS)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
-
-hex: $(TARGET)
-	avr-objcopy -O ihex $(TARGET) $(BIN)
+	.PHONY: all
+$(POBJ) : $(PDEPS)
+	$(CXX) $(CXXFLAGS) -c $(patsubst $(BUILD_DIR)/%.o,$(SRC_DIR)/%.cpp,$@) -o $@
+$(TARGET) : $(POBJ)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(POBJ)
