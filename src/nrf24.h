@@ -50,7 +50,7 @@ public:
     void writeRegister(uint8_t addr, uint8_t data);
     void setDestAddress(const uint8_t * addr, uint8_t size);
     void setChannel(uint8_t offset_mhz);
-    void writeTxPayload(const uint8_t *, uint8_t);
+    void writeTxPayload(const void *, uint8_t);
     void init();
-    void transmit(uint8_t * data, uint8_t size);
+    void transmit(void * data, uint8_t size);
 };

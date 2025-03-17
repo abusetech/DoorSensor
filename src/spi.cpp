@@ -4,6 +4,10 @@
 SPI::SPI(volatile uint8_t * _ss_port, uint8_t _ss_pin){
     ss_pin = _ss_pin;
     ss_port = _ss_port;
+    init();
+}   
+
+void SPI::init(){
     //Initialize the port.    //SCK (PA4)
     DDRA |= 1 << PA4;
     *ss_port &= ~(1 << PA4);
@@ -17,7 +21,7 @@ SPI::SPI(volatile uint8_t * _ss_port, uint8_t _ss_pin){
     DDRA &= ~(1 << PA6);
     //Configure SPI mode
     USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
-}   
+}
 
 void SPI::begin(){
     //Start a transfer by asserting CS low
@@ -51,19 +55,19 @@ uint8_t SPI::transfer(uint8_t b){
 /// @brief Writes buf to the SPI bus, while copying data read from the bus back to buf
 /// @param buf pointer to an array of bytes (or compatible)
 /// @param count number of bytes to transfer
-void SPI::transfer(uint8_t * buf, uint8_t count){
+void SPI::transfer(void * buf, uint8_t count){
     uint8_t temp = 0;
     for (int i = 0; i < count; i++){
-        temp = transferByte(buf[i]);
-        buf[i] = temp;
+        temp = transferByte(((uint8_t *)buf)[i]);
+        ((uint8_t *)buf)[i] = temp;
     }
 }
 
 /// @brief Writes `buffer` to the SPI bus
 /// @param buffer pointer to an array of bytes (or compatible)
 /// @param size number of bytes to transfer
-void SPI::write(const uint8_t * buffer, uint8_t size){
+void SPI::write(const void * buffer, uint8_t size){
     for (int i = 0; i < size; i++){
-        transferByte(buffer[i]);
+        transferByte(((uint8_t *)buffer)[i]);
     }   
 }

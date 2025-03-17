@@ -44,13 +44,19 @@ void NRF24::setChannel(uint8_t off_mhz){
     writeRegister(RF24_RF_CH, off_mhz);
 }
 
-void NRF24::writeTxPayload(const uint8_t * payload, uint8_t size){
+void NRF24::writeTxPayload(const void * payload, uint8_t size){
     spi.transfer(RF24_W_TX_PAYLOAD);
     spi.write(payload, size);
 }
 
-void NRF24::transmit(uint8_t * data, uint8_t size){
+void NRF24::transmit(void * data, uint8_t size){
     spi.begin();
     writeRegister(RF24_CONFIG, 1<<RF24_EN_CRC);
+    spi.end();
+    spi.begin();
+    //CE Low
+    *ce_port &= ~(1<<ce_pin);
     writeTxPayload(data, size);
+    //CE High
+    *ce_port |= (1<<ce_pin);
 }

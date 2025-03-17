@@ -1,34 +1,79 @@
+#include <stdint.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/pgmspace.h> 
-#include <stdint.h>
+#include <avr/sleep.h>
+#include <avr/wdt.h>
+#include "common.h"
+#include <util/delay.h>
 #include "spi.h"
 #include "nrf24.h"
+#include "adxl345.h"
 
 #define NRF_SPI_CS_PORT PORTA
 #define NRF_SPI_CE_PORT PORTA
 #define NRF_SPI_CS PA1
 #define NRF_SPI_CE PA3
+//Resolution of STATUS_TX_PERIOD is the same as the WDT timeout setting.
+#define STATUS_TX_PERIOD 30
 
 //f = 2400 + RF_CH MHz
 #define RF_CHAN (25)
-const uint8_t DEST_ADDRESS[5] PROGMEM = {0x7E, 0x7E, 0x7E, 0x7E, 0x7E};
+const uint8_t DEST_ADDRESS[5] = {0x7E, 0x7E, 0x7E, 0x7E, 0x7E};
 
 int main (void);
+void txStatus();
+
+volatile uint16_t wdt_timer = 0;
+SPI nrf_spi(&NRF_SPI_CS_PORT, NRF_SPI_CS);
+NRF24 nrf(nrf_spi, &NRF_SPI_CE_PORT, NRF_SPI_CE);
+ADXL345 accel();
+
+typedef struct __attribute__((packed)) status_packet {
+    uint8_t sensorClass;
+    uint8_t sensorID;
+    uint8_t state;
+} status_packet_t;
 
 int main (void){
-    SPI nrf_spi(&NRF_SPI_CS_PORT, NRF_SPI_CS);
-    NRF24 nrf(nrf_spi, &NRF_SPI_CE_PORT, NRF_SPI_CE) ;
-    //DEST_ADDRESS is stored in program memory to save SRAM, we copy it to a buffer
-    //Temporarily to set it in the NRF library. It is enclosed in a closure so that it
-    //falls out of scope immediately.
-    {
-        uint8_t addr[sizeof(DEST_ADDRESS)];
-        for (uint8_t i = 0; i < sizeof(DEST_ADDRESS); i++){
-            addr[i] = pgm_read_byte(&(DEST_ADDRESS[i]));
-        }
-        nrf.setDestAddress(addr, sizeof(DEST_ADDRESS));
-    }
+    //Disable WDT, it may still be enabled after reset
+    wdt_disable();
+    //Wait ~100ms for periphrials to settle
+    _delay_ms(100);
+    nrf.setDestAddress(DEST_ADDRESS, sizeof(DEST_ADDRESS));
     nrf.setChannel(RF_CHAN);
+    //Configure WDT. We need this to bring the chip out of standby.
+    wdt_enable(WDTO_8S);
+    WDTCSR |= (1 << WDIE);
+    //Set the sleep mode
+    set_sleep_mode(SLEEP_MODE_STANDBY);
     
+    while(true){
+        //Sleep. Zzzzz.
+        sleep_enable();
+        sleep_cpu();
+        if (wdt_timer >= STATUS_TX_PERIOD){
+            wdt_timer = 0;
+            nrf_spi.init(); //USI needs to be re initialized after waking from sleep
+            txStatus();
+        }
+    }
+}
+
+void txStatus(){
+    status_packet_t pkt;
+    pkt.sensorClass = 15;
+    pkt.sensorID = 103;
+    //Read accelerometer status
+    pkt.state = 0;
+    //Read battery status
+    pkt.state |= 0;
+    //transmit
+    nrf.transmit(&pkt, sizeof(pkt));
+}
+
+ISR(WDT_vect){
+    //Clear SE bit
+    sleep_disable();
+    wdt_timer += 8;
+    wdt_reset();
 }
