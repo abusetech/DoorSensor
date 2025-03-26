@@ -68,6 +68,8 @@ fp-info-cache
 
 
 build/
+tests/i2cwave/build/
+tests/i2cwave/sim_i2c
 .gim
 .vscode/
 src/old/

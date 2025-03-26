@@ -11,3 +11,5 @@ g++ -c include/common.cpp -o build/common.o
 g++ -c include/softi2c.cpp -o build/softi2c.o
 g++ -c main.cpp -o build/main.o
 g++ -o sim_i2c build/main.o build/softi2c.o build/common.o 
+./sim_i2c > out.csv
+octave plt.m

@@ -32,6 +32,7 @@ typedef struct __attribute__((packed)) status_packet {
     uint8_t sensorClass;
     uint8_t sensorID;
     uint8_t state;
+    uint16_t battery_mv;
 } status_packet_t;
 
 int main (void){
@@ -43,6 +44,7 @@ int main (void){
     nrf.setChannel(RF_CHAN);
     //Configure WDT. We need this to bring the chip out of standby.
     wdt_enable(WDTO_8S);
+    //WDT triggers an interrupt.
     WDTCSR |= (1 << WDIE);
     //Set the sleep mode
     set_sleep_mode(SLEEP_MODE_STANDBY);
@@ -66,7 +68,7 @@ void txStatus(){
     //Read accelerometer status
     pkt.state = 0;
     //Read battery status
-    pkt.state |= 0;
+    pkt.battery_mv = 3300;
     //transmit
     nrf.transmit(&pkt, sizeof(pkt));
 }

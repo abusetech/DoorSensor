@@ -7,11 +7,11 @@ It is designed to have very low power comsumption to allow the batteries to last
 ### Parts
 
 * ATTINY44/84
-* BMA180
+* ADXL345
 * NRF24L01(+) module
 * 2x AAA battery holder
 
-You will also need an Arduino board, a second NRF24L01+, and some means of connecting the two devices.
+You will also need an Arduino board and a second NRF24L01+ to build the receiver.
 
 ### Operation
 

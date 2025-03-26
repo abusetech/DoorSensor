@@ -37,10 +37,11 @@ void prettyPrintData(){
 // Every time this function is called, store a datapoint.
 void _delay_us(double us)
 {
-    for (double delta = 0; delta <= us; delta+=10){
-        _pi->time += us;
-        makeDataPoint();
-    }
+    _pi->time++;
+    makeDataPoint();
+    _pi->time += us - 2;
+    makeDataPoint();
+    _pi->time++;
 }
 
 PortInfo * get_port_info_ptr(){
