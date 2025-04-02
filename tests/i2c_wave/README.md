@@ -1,0 +1,3 @@
+## I2C Wave
+
+This is a tool for verification of the software I2C code. It utilizes a modified common.h header to inject some code into the software i2c library (softi2c.h). It is compiled using the system (as in the native one running on the development machine) C++ compiler. The customized header defines functions and variables to mock or emulate the functionality of the microcontroller. The test produces a CSV file that is read into a MATLAP / Octave sctipt that is then executed with Octave to produce a graph of the pin states.

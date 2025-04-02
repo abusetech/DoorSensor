@@ -3,9 +3,11 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/wdt.h>
+//Common.h defines F_CPU, so it must be included before delay.h
 #include "common.h"
 #include <util/delay.h>
 #include "spi.h"
+#include "softi2c.h"
 #include "nrf24.h"
 #include "adxl345.h"
 
@@ -25,8 +27,9 @@ void txStatus();
 
 volatile uint16_t wdt_timer = 0;
 SPI nrf_spi(&NRF_SPI_CS_PORT, NRF_SPI_CS);
+SoftI2C i2c;
 NRF24 nrf(nrf_spi, &NRF_SPI_CE_PORT, NRF_SPI_CE);
-ADXL345 accel();
+ADXL345 accel(i2c);
 
 typedef struct __attribute__((packed)) status_packet {
     uint8_t sensorClass;
@@ -40,6 +43,9 @@ int main (void){
     wdt_disable();
     //Wait ~100ms for periphrials to settle
     _delay_ms(100);
+    nrf_spi.init();
+    i2c.init();
+    accel.fifoCtl(ADXL_FIFO_MODE_BYPASS, 0, 0b0011);
     nrf.setDestAddress(DEST_ADDRESS, sizeof(DEST_ADDRESS));
     nrf.setChannel(RF_CHAN);
     //Configure WDT. We need this to bring the chip out of standby.

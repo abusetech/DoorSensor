@@ -47,6 +47,7 @@ void _delay_us(double us)
 PortInfo * get_port_info_ptr(){
     if (_pi == NULL){
         _pi = (PortInfo*)malloc(sizeof(_pi));
+        memset(_pi, 0, sizeof(_pi));
     }
     return _pi;
 }
