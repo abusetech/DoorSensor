@@ -45,7 +45,14 @@ int main (void){
     _delay_ms(100);
     nrf_spi.init();
     i2c.init();
-    accel.fifoCtl(ADXL_FIFO_MODE_BYPASS, 0, 0b0011);
+    //Bypass the FIFO, old values overwritten as they come in. 
+    accel.fifoCtl(ADXL_FIFO_MODE_BYPASS, 0, 0);
+    //Select the measrement rate. 0b0011 = 0.78Hz, 23uA consumption.
+    //TODO: Power consumption could be further reduced to ~0.1uA by using standby mode (clearing the measure bit).
+    accel.bwRate(0, 0b0011);
+    //Enable measurement mode.
+    accel.powerCtl(ADXL_POWER_MEASURE, 0);
+    //Configure the NRF24L01+ module
     nrf.setDestAddress(DEST_ADDRESS, sizeof(DEST_ADDRESS));
     nrf.setChannel(RF_CHAN);
     //Configure WDT. We need this to bring the chip out of standby.
