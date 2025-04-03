@@ -31,10 +31,11 @@ SoftI2C i2c;
 NRF24 nrf(nrf_spi, &NRF_SPI_CE_PORT, NRF_SPI_CE);
 ADXL345 accel(i2c);
 
+//On AVR platforms, this packet will be little-endian 2's complement format
 typedef struct __attribute__((packed)) status_packet {
     uint8_t sensorClass;
     uint8_t sensorID;
-    uint8_t state;
+    uint8_t locked;
     uint16_t battery_mv;
 } status_packet_t;
 
@@ -47,7 +48,7 @@ int main (void){
     i2c.init();
     //Bypass the FIFO, old values overwritten as they come in. 
     accel.fifoCtl(ADXL_FIFO_MODE_BYPASS, 0, 0);
-    //Select the measrement rate. 0b0011 = 0.78Hz, 23uA consumption.
+    //Select the measurement rate. 0b0011 = 0.78Hz, 23uA consumption.
     //TODO: Power consumption could be further reduced to ~0.1uA by using standby mode (clearing the measure bit).
     accel.bwRate(0, 0b0011);
     //Enable measurement mode.
@@ -79,7 +80,15 @@ void txStatus(){
     pkt.sensorClass = 15;
     pkt.sensorID = 103;
     //Read accelerometer status
-    pkt.state = 0;
+    adxl_data_t accelData = accel.readFifo();
+    //in +/- 2g mode, the axis scaling factor is 4mg / LSB.
+    //therefore, we expect a read of ~250 for any axis pointed straight up.
+    //if we take any angle > 30 degrees from vertical to be 'open'
+    //then 250 * sqrt(3)/2 = 250 * 0.866 = 216.5
+    pkt.locked = 1;
+    if (accelData.datay < 216){
+        pkt.locked = 0;
+    }
     //Read battery status
     pkt.battery_mv = 3300;
     //transmit
