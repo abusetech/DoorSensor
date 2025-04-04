@@ -52,10 +52,6 @@ static void _I2C_PUMP_BIT(uint8_t b){
     _delay_us(I2C_CLOCK_PERIOD>>2);
 }
 
-static void _I2C_REP_START(){
-    _I2C_SDA_HIGH();
-}
-
 //Assumes SCA/SCL HIGH
 static void _I2C_START(){
     _I2C_SDA_LOW();
@@ -197,7 +193,6 @@ void SoftI2C::init(){
 
 void SoftI2C::dummyTest(){
     uint8_t testBytes[] = {0x1f, 0x55, 0x01};
-    uint8_t inBytes[2];
     init();
     _delay_us(500);
     writeBytes(0x1, testBytes, sizeof(testBytes));

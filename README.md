@@ -26,3 +26,13 @@ Make a build directory:
 Run `make`
 
 `$ make all`
+
+### Debugging
+
+This project can be run in [simavr](https://github.com/buserror/simavr). To do so, build the binaries and then execute the ELF inside simavr:
+
+`$ simavr -g build/attiny44.elf`
+
+Then connect to simavr using gdb:
+
+`avr-gdb -ex "symbol-file build/attiny44.elf" -ex "target remote localhost:1234"`
