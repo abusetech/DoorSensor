@@ -23,7 +23,7 @@
 const uint8_t DEST_ADDRESS[5] = {0x7E, 0x7E, 0x7E, 0x7E, 0x7E};
 
 int main (void);
-void txStatus();
+void txStatus(ADXL345&);
 
 volatile uint16_t wdt_timer = 0;
 SPI nrf_spi(&NRF_SPI_CS_PORT, NRF_SPI_CS);
@@ -40,12 +40,12 @@ typedef struct __attribute__((packed)) status_packet {
 } status_packet_t;
 
 int main (void){
+    nrf_spi.init();
+    i2c.init();
     //Disable WDT, it may still be enabled after reset
     wdt_disable();
     //Wait ~100ms for periphrials to settle
     _delay_ms(100);
-    nrf_spi.init();
-    i2c.init();
     //Bypass the FIFO, old values overwritten as they come in. 
     accel.fifoCtl(ADXL_FIFO_MODE_BYPASS, 0, 0);
     //Select the measurement rate. 0b0011 = 0.78Hz, 23uA consumption.
@@ -56,6 +56,8 @@ int main (void){
     //Configure the NRF24L01+ module
     nrf.setDestAddress(DEST_ADDRESS, sizeof(DEST_ADDRESS));
     nrf.setChannel(RF_CHAN);
+    //Enable interrupts
+    sei();
     //Configure WDT. We need this to bring the chip out of standby.
     wdt_enable(WDTO_8S);
     //WDT triggers an interrupt.
@@ -63,19 +65,22 @@ int main (void){
     //Set the sleep mode
     set_sleep_mode(SLEEP_MODE_STANDBY);
     
+    
     while(true){
         //Sleep. Zzzzz.
         sleep_enable();
         sleep_cpu();
+        //Clear SE bit
+        sleep_disable();
         if (wdt_timer >= STATUS_TX_PERIOD){
             wdt_timer = 0;
             nrf_spi.init(); //USI needs to be re initialized after waking from sleep
-            txStatus();
+            txStatus(accel);
         }
     }
 }
 
-void txStatus(){
+void txStatus(ADXL345& accel){
     status_packet_t pkt;
     pkt.sensorClass = 15;
     pkt.sensorID = 103;
@@ -89,7 +94,7 @@ void txStatus(){
     if (accelData.datay < 216){
         pkt.locked = 0;
     }
-    //Read battery status
+    //Fake battery status
     pkt.battery_mv = 3300;
     //transmit
     nrf.transmit(&pkt, sizeof(pkt));
@@ -99,5 +104,6 @@ ISR(WDT_vect){
     //Clear SE bit
     sleep_disable();
     wdt_timer += 8;
-    wdt_reset();
+    //Next WDT triggers an interrupt.
+    WDTCSR |= (1 << WDIE);
 }

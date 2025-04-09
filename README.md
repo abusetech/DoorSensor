@@ -1,8 +1,20 @@
 # DoorSensor
 
-This is a simple sensor that uses an accelerometer and an NRF24l01+ wireless transceiver to monitor the state of a door thumbturn (The small knob that moves the deadbolt). The sensor physically attaches to the deadbolt and uses the accelerometer to deterimine its orientation and therefore the state of the deadbolt.
+This is a wireless sensor that uses an accelerometer and an NRF24l01+ wireless transceiver to monitor the state of a door thumbturn (The small knob that moves the deadbolt). The sensor physically attaches to the deadbolt and uses the accelerometer to deterimine its orientation and therefore the state of the deadbolt. This allows the device to be attached to the door without modifying the entry or causing damage. This is important in scenarios such as apartment rentals as lease agreements typically do not allow tenants to modify or replace the door lock.
 
-It is designed to have very low power comsumption to allow the batteries to last a long time.
+This sensor is battery operated and designed to have very low power comsumption in order to allow the batteries to last a long time.
+
+### Project contents
+
+* Circuit schematic (board design coming soon!)
+* Firmware including abstractions for the accelerometer and radio
+* Arduino code to receive data from the remote sensor (coming soon)
+* Testing tools for various parts of the project
+
+### Firmware features
+
+* A tiny, highly optimized software TWI (I2C compatible) implementation
+* Firmware code optimized for ultra low power consumption
 
 ### Parts
 

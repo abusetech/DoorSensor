@@ -39,9 +39,11 @@ uint8_t SPI::transferByte(uint8_t b){
     USIDR = b;
     //Clear overflow bit
     USISR = (1 << USIOIF);
+    USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
     //Spin until overflow bit is set
-    while ((USISR & USIOIF) == 0){
+    while ((USISR & (1 << USIOIF)) == 0){
         //Original has USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC) here
+        //USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
     }
     //Get the byte we received form the data register
     b = USIDR;
