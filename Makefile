@@ -14,7 +14,7 @@ SIMAVR_C = simavr.c
 SIMAVR_H = simavr.h
 SIMAVR_OBJ = simavr.o
 
-DEPS = main.cpp nrf24.cpp spi.cpp adxl345.cpp softi2c.cpp
+DEPS = main.cpp nrf24.cpp spi.cpp adxl345.cpp softi2c.cpp battery.cpp
 
 HEADERS = $(patsubst %.cpp,%.h,$(DEPS))
 OBJ=$(patsubst %.h,%.o,$(HEADERS))

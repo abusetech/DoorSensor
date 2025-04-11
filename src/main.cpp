@@ -10,6 +10,7 @@
 #include "softi2c.h"
 #include "nrf24.h"
 #include "adxl345.h"
+#include "battery.h"
 
 #define NRF_SPI_CS_PORT PORTA
 #define NRF_SPI_CE_PORT PORTA
@@ -74,8 +75,10 @@ int main (void){
         sleep_disable();
         if (wdt_timer >= STATUS_TX_PERIOD){
             wdt_timer = 0;
+            BatteryStatus::init();
             nrf_spi.init(); //USI needs to be re initialized after waking from sleep
             txStatus(accel);
+            BatteryStatus::shutdown();
         }
     }
 }
@@ -94,8 +97,7 @@ void txStatus(ADXL345& accel){
     if (accelData.datay < 216){
         pkt.locked = 0;
     }
-    //Fake battery status
-    pkt.battery_mv = 3300;
+    pkt.battery_mv = BatteryStatus::measure_mv();
     //transmit
     nrf.transmit(&pkt, sizeof(pkt));
 }
