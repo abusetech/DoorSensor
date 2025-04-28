@@ -7,14 +7,14 @@ This sensor is battery operated and designed to have very low power comsumption 
 ### Project contents
 
 * Circuit schematic (board design coming soon!)
-* Firmware including abstractions for the accelerometer and radio
+* Firmware sources, including some novel abstractions for the accelerometer and radio
 * Arduino code to receive data from the remote sensor (coming soon)
 * Testing tools for various parts of the project
 
 ### Firmware features
 
 * A tiny, highly optimized software TWI (I2C compatible) implementation
-* Firmware code optimized for ultra low power consumption
+* Firmware code optimized for ultra low power consumption battery powered operation
 
 ### Parts
 
@@ -25,9 +25,9 @@ This sensor is battery operated and designed to have very low power comsumption 
 
 You will also need an Arduino board and a second NRF24L01+ to build the receiver.
 
-### Operation
+### Project Plan
 
-The Arduino runs firmware that allows it to connect to HomeAssistant. It acts as a bridge between the HomeAssistant and the wireless sensor.
+The Arduino will run firmware that allows it to connect to HomeAssistant. It acts as a bridge between the HomeAssistant and the wireless sensor.
 
 ### Building
 
